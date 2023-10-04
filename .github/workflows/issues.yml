@@ -30,8 +30,16 @@ jobs:
           
           if [ -n "$new_feature_labels" ]; then
             echo "New feature label found. Updating JSON file..."
+            
+            # Change the working directory to 'static'
+            cd static
+            
             # Write the new feature label information to the existing JSON file
-            echo "$new_feature_labels" > static/issues.json
+            echo "$new_feature_labels" > issues.json
+            
+            # Change back to the original working directory
+            cd ..
+            
             echo "::set-output name=labels_found::true"  # Set an output variable
           else
             echo "No new feature label found or issue not closed."
