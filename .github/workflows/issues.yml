@@ -1,0 +1,43 @@
+name: Update JSON with issues
+
+on:
+  issues:
+    types: [closed]
+
+jobs:
+  update_json:
+    runs-on: ubuntu-latest
+    env:
+      TARGET_REPOSITORY: "SAP-KSeF/SAP-KSeF"
+    steps:
+    - name: Fetch and log issue labels
+      id: label_check
+      run: |
+        # Fetch labels
+        response=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" https://api.github.com/repos/${TARGET_REPOSITORY}/issues/${{ github.event.issue.number }}/labels)
+        
+        # Print response to the logs
+        echo "API Response:"
+        echo "$response"
+
+        # Parse response to check for the "new_feature" label
+        new_feature_label=$(echo "$response" | jq -r '.[] | select(.name == "new_feature") | {title: .name, status: .status}')
+        
+        # Check if the issue is closed and the "new_feature" label is present
+        if [ -n "$new_feature_label" ]; then
+          echo "New feature label found. Updating JSON file..."
+          # Append the new feature label information to the existing JSON file
+          echo "$new_feature_label" >> static/issues.json
+        else
+          echo "No new feature label found or issue not closed."
+        fi
+
+    - name: Commit changes
+      run: |
+        git config --global user.email "no-reply@github.com"
+        git config --global user.name "GitHub Actions"
+        git add static/issues.json
+        git commit -m "Update issues.json"
+        git push origin HEAD:${{ github.event.repository.default_branch }}
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
