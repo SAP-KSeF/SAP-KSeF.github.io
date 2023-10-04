@@ -59,4 +59,4 @@ jobs:
         git commit -m "Update issues.json"
         git push origin HEAD:${{ github.ref }}
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.ORG_GITHUB_TOKEN }}
