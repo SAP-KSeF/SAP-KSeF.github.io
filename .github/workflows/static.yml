@@ -25,9 +25,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
           
-      - name: Run index.js
+      - name: Run script.js
         run: |
-          node index.js
+          node script.js
 
       - name: Setup Pages
         uses: actions/configure-pages@v3
