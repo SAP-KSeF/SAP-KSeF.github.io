@@ -2,7 +2,7 @@ name: Update JSON with issues
 
 on:
   repository_dispatch:
-    types: [update-json]
+    types: [update_json]
 
     workflow_dispatch:
     inputs:
