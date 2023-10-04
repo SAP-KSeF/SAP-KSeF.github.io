@@ -11,23 +11,27 @@ jobs:
     - name: Fetch and log issue labels
       id: label_check
       run: |
-        # Fetch labels
-        response=$(curl -s -H "Authorization: token ${{ secrets.ORG_GITHUB_TOKEN }}" https://api.github.com/repos/${{ github.event.client_payload.repo_name }}/issues/${{ github.event.client_payload.issue_number }}/labels)
+        # Fetch issues
+        response=$(curl -s -H "Authorization: token ${{ secrets.ORG_GITHUB_TOKEN }}" "https://api.github.com/repos/${{ github.event.client_payload.repo_name }}/issues?state=closed&labels=new_feature&sort=updated")
         
         # Print response to the logs
         echo "API Response:"
         echo "$response"
-
-        # Parse response to check for the "new_feature" label
-        new_feature_label=$(echo "$response" | jq -r '.[] | select(.name == "new_feature") | {title: .name, status: .status}')
         
-        # Check if the issue is closed and the "new_feature" label is present
-        if [ -n "$new_feature_label" ]; then
-          echo "New feature label found. Updating JSON file..."
-          # Append the new feature label information to the existing JSON file
-          echo "$new_feature_label" >> static/issues.json
+        # Parse response to get only necessary data
+        new_feature_labels=$(echo "$response" | jq -r '.[] | select(.labels[].name == "new_feature") | {title: .title, color: .labels[].color}')
+        
+        # Check if the response is successful (HTTP status code 200)
+        if [ $? -eq 0 ]; then
+          if [ -n "$new_feature_labels" ]; then
+            echo "New feature label found. Updating JSON file..."
+            # Write the new feature label information to the existing JSON file
+            echo "$new_feature_labels" > static/issues.json
+          else
+            echo "No new feature label found or issue not closed."
+          fi
         else
-          echo "No new feature label found or issue not closed."
+          echo "Error: Unable to fetch issues or invalid response."
         fi
 
     - name: Commit changes
