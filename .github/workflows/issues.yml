@@ -2,24 +2,12 @@ name: Update JSON with issues
 
 on:
   repository_dispatch:
-    types: [update_json]
-
-    workflow_dispatch:
-    inputs:
-      issue_number:
-        description: 'Issue number to update JSON'
-        required: true
-      repo_name: 
-        description: 'Repo name to fetch labels from'
-        required: true
+    types: [update-json]
 
 jobs:
-  update_json:
+  update-json:
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v2
-
     - name: Fetch and log issue labels
       id: label_check
       run: |
@@ -50,4 +38,4 @@ jobs:
         git commit -m "Update issues.json"
         git push origin HEAD:${{ github.ref }}
       env:
-        GITHUB_TOKEN: ${{ secrets.ORG_GITHUB_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
