@@ -69,16 +69,16 @@ export default function Home() {
   return (
     <main className="flex h-screen w-screen items-center justify-center bg-neutral-100">
       <div className="flex flex-col gap-4 w-full justify-center items-center">
-        {(searchParams.length === 0 || searchParams.includes("new-features")) &&
+        {(searchParams.length === 0 || searchParams.includes("planned-features")) &&
           renderTable({
-            title: "New Features",
+            title: "Planned Features",
             data: filterIssues({ state: "open", label: "new feature" }),
           })}
 
         {(searchParams.length === 0 ||
-          searchParams.includes("done-features")) &&
+          searchParams.includes("new-features")) &&
           renderTable({
-            title: "Done Features",
+            title: "New Features",
             data: filterIssues({ state: "closed", label: "new feature" }),
           })}
 
